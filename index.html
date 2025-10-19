@@ -4,192 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>سمپا - سامانه مدیریت پرسش و پاسخ</title>
+    <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100;200;300;400;500;600;700;800;900&display=swap');
-        
-        * {
-            font-family: 'Vazirmatn', sans-serif;
-        }
-        
-        .fade-in {
-            animation: fadeIn 0.5s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .pulse-blue {
-            animation: pulseBlue 2s infinite;
-        }
-        
-        @keyframes pulseBlue {
-            0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        }
-        
-        .btn-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .btn-hover:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-        
-        .card-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .card-hover:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
-        }
-        
-        .sidebar {
-            transition: all 0.3s ease;
-            background: linear-gradient(180deg, #1e3a8a 0%, #3b82f6 100%);
-        }
-        
-        .gradient-bg {
-            background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-        }
-        
-        .sidebar-item {
-            transition: all 0.3s ease;
-            border-radius: 0.75rem;
-            margin: 0.25rem 0.5rem;
-        }
-        
-        .sidebar-item:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            transform: translateX(-5px);
-        }
-        
-        .sidebar-item.active {
-            background-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        
-        .notification {
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            padding: 15px 20px;
-            border-radius: 8px;
-            color: white;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            transform: translateX(-150%);
-            transition: transform 0.3s ease;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification.success {
-            background-color: #10b981;
-        }
-        
-        .notification.error {
-            background-color: #ef4444;
-        }
-        
-        .file-upload {
-            position: relative;
-            overflow: hidden;
-            display: inline-block;
-        }
-        
-        .file-upload input[type=file] {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-        }
-        
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        .modal.open {
-            display: flex;
-        }
-        
-        .modal-content {
-            background-color: white;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-        
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                transform: translateX(100%);
-            }
-            
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            
-            .main-content {
-                padding-right: 0 !important;
-            }
-            
-            .main-content.sidebar-open {
-                transform: translateX(-100%);
-            }
-            
-            .btn-responsive {
-                width: 100%;
-                margin-bottom: 0.5rem;
-            }
-            
-            .btn-group-responsive {
-                flex-direction: column;
-            }
-            
-            .modal-content {
-                width: 95%;
-                margin: 10px;
-            }
-        }
-    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body class="bg-blue-50">
     <!-- اعلان‌ها -->
     <div id="notification" class="notification"></div>
 
-    <!-- مودال‌ها -->
+    <!-- مودال ویرایش سوال -->
     <div id="editQuestionModal" class="modal">
         <div class="modal-content p-6">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-semibold text-blue-800">ویرایش سوال</h3>
+                <h3 class="text-lg font-semibold text-blue-800">ویرایش کامل سوال</h3>
                 <button id="closeEditModal" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times text-xl"></i>
                 </button>
             </div>
             <form id="editQuestionForm">
                 <input type="hidden" id="editQuestionId">
+                
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                     <div>
                         <label for="editQuestionSubject" class="block text-sm font-medium text-blue-700 mb-1">موضوع سوال</label>
@@ -212,12 +48,219 @@
                         </select>
                     </div>
                 </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="editQuestionLevel" class="block text-sm font-medium text-blue-700 mb-1">سطح دشواری</label>
+                        <select id="editQuestionLevel" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="easy">آسان</option>
+                            <option value="medium">متوسط</option>
+                            <option value="hard">دشوار</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-blue-700 mb-1">امتیاز سوال</label>
+                        <div class="p-2 bg-blue-50 rounded-md text-center">
+                            <span id="editScoreValue" class="text-lg font-bold text-blue-700">۱۵</span>
+                            <span class="text-blue-600"> امتیاز</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="mb-4">
                     <label for="editQuestionText" class="block text-sm font-medium text-blue-700 mb-1">متن سوال</label>
-                    <textarea id="editQuestionText" rows="4" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+                    <textarea id="editQuestionText" rows="4" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="متن سوال..."></textarea>
                 </div>
+                
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-blue-700 mb-1">گزینه‌ها</label>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="flex items-center">
+                            <span class="bg-blue-100 text-blue-800 rounded-l-md px-3 py-2 border border-blue-300">۱</span>
+                            <input type="text" id="editOption1" class="flex-1 px-3 py-2 border border-blue-300 border-r-0 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="گزینه اول">
+                        </div>
+                        <div class="flex items-center">
+                            <span class="bg-blue-100 text-blue-800 rounded-l-md px-3 py-2 border border-blue-300">۲</span>
+                            <input type="text" id="editOption2" class="flex-1 px-3 py-2 border border-blue-300 border-r-0 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="گزینه دوم">
+                        </div>
+                        <div class="flex items-center">
+                            <span class="bg-blue-100 text-blue-800 rounded-l-md px-3 py-2 border border-blue-300">۳</span>
+                            <input type="text" id="editOption3" class="flex-1 px-3 py-2 border border-blue-300 border-r-0 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="گزینه سوم">
+                        </div>
+                        <div class="flex items-center">
+                            <span class="bg-blue-100 text-blue-800 rounded-l-md px-3 py-2 border border-blue-300">۴</span>
+                            <input type="text" id="editOption4" class="flex-1 px-3 py-2 border border-blue-300 border-r-0 rounded-r-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="گزینه چهارم">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="editCorrectAnswer" class="block text-sm font-medium text-blue-700 mb-1">گزینه صحیح</label>
+                    <select id="editCorrectAnswer" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="1">گزینه 1</option>
+                        <option value="2">گزینه 2</option>
+                        <option value="3">گزینه 3</option>
+                        <option value="4">گزینه 4</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="editDetailedAnswer" class="block text-sm font-medium text-blue-700 mb-1">پاسخنامه تشریحی</label>
+                    <textarea id="editDetailedAnswer" rows="3" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="پاسخ تشریحی سوال..."></textarea>
+                </div>
+                
+                <div class="mb-4">
+                    <div class="flex items-center mb-2">
+                        <input type="checkbox" id="editNeedImage" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-blue-300 rounded">
+                        <label for="editNeedImage" class="mr-2 block text-sm font-medium text-blue-700">سوال نیاز به شکل دارد</label>
+                    </div>
+                </div>
+
                 <div class="flex justify-end space-x-2 space-x-reverse mt-6">
                     <button type="button" id="cancelEdit" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 btn-hover">
+                        انصراف
+                    </button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover">
+                        ذخیره تغییرات
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- مودال ساخت آزمون -->
+    <div id="createExamModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-blue-800">ساخت آزمون جدید</h3>
+                <button id="closeExamModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="createExamForm">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="examSubject" class="block text-sm font-medium text-blue-700 mb-1">موضوع آزمون</label>
+                        <select id="examSubject" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">همه موضوعات</option>
+                            <option>ریاضی</option>
+                            <option>فیزیک</option>
+                            <option>شیمی</option>
+                            <option>ادبیات</option>
+                            <option>زبان انگلیسی</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="examChapter" class="block text-sm font-medium text-blue-700 mb-1">مبحث درسی</label>
+                        <select id="examChapter" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">همه مباحث</option>
+                            <!-- مباحث به صورت دینامیک لود می‌شوند -->
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label for="examLevel" class="block text-sm font-medium text-blue-700 mb-1">سطح دشواری</label>
+                        <select id="examLevel" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">همه سطوح</option>
+                            <option value="easy">آسان</option>
+                            <option value="medium">متوسط</option>
+                            <option value="hard">دشوار</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="examQuestionCount" class="block text-sm font-medium text-blue-700 mb-1">تعداد سوالات</label>
+                        <input type="number" id="examQuestionCount" min="1" max="50" value="10" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div class="mb-4">
+                    <label for="examTitle" class="block text-sm font-medium text-blue-700 mb-1">عنوان آزمون</label>
+                    <input type="text" id="examTitle" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="عنوان آزمون...">
+                </div>
+
+                <div class="mb-4">
+                    <label for="examTime" class="block text-sm font-medium text-blue-700 mb-1">زمان آزمون (دقیقه)</label>
+                    <input type="number" id="examTime" min="5" max="180" value="45" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                <div class="bg-blue-50 p-4 rounded-lg mb-4">
+                    <h4 class="font-medium text-blue-800 mb-2">پیش‌نمایش سوالات موجود</h4>
+                    <div id="availableQuestions" class="text-sm text-blue-600">
+                        در حال محاسبه...
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-2 space-x-reverse mt-6">
+                    <button type="button" id="previewExam" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 btn-hover">
+                        پیش‌نمایش آزمون
+                    </button>
+                    <button type="button" id="generateExam" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover">
+                        تولید PDF
+                    </button>
+                </div>
+            </form>
+
+            <!-- پیش‌نمایش آزمون -->
+            <div id="examPreview" class="hidden mt-6">
+                <div class="border-t pt-4">
+                    <h4 class="text-lg font-semibold text-blue-800 mb-4">پیش‌نمایش آزمون</h4>
+                    <div id="previewContent" class="exam-preview">
+                        <!-- محتوای آزمون اینجا نمایش داده می‌شود -->
+                    </div>
+                    <div class="flex justify-end mt-4">
+                        <button type="button" id="downloadPdf" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 btn-hover">
+                            دانلود PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- مودال مدیریت کاربران -->
+    <div id="userManagementModal" class="modal">
+        <div class="modal-content p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-semibold text-blue-800">ویرایش کاربر</h3>
+                <button id="closeUserModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <form id="userManagementForm">
+                <input type="hidden" id="editUserId">
+                
+                <div class="mb-4">
+                    <label for="editUserName" class="block text-sm font-medium text-blue-700 mb-1">نام کاربری</label>
+                    <input type="text" id="editUserName" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="نام کاربری">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="editUserPassword" class="block text-sm font-medium text-blue-700 mb-1">رمز عبور جدید</label>
+                    <input type="password" id="editUserPassword" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="رمز عبور جدید (اختیاری)">
+                </div>
+                
+                <div class="mb-4">
+                    <label for="editUserRole" class="block text-sm font-medium text-blue-700 mb-1">سطح دسترسی</label>
+                    <select id="editUserRole" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="user">کاربر عادی</option>
+                        <option value="admin">مدیر</option>
+                        <option value="moderator">ناظر</option>
+                    </select>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="editUserStatus" class="block text-sm font-medium text-blue-700 mb-1">وضعیت حساب</label>
+                    <select id="editUserStatus" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="active">فعال</option>
+                        <option value="inactive">غیرفعال</option>
+                        <option value="banned">مسدود شده</option>
+                    </select>
+                </div>
+
+                <div class="flex justify-end space-x-2 space-x-reverse mt-6">
+                    <button type="button" id="cancelUserEdit" class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 btn-hover">
                         انصراف
                     </button>
                     <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover">
@@ -247,11 +290,11 @@
                 <div class="rounded-md shadow-sm -space-y-px">
                     <div>
                         <label for="username" class="sr-only">نام کاربری</label>
-                        <input id="username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-3 border border-blue-300 placeholder-blue-500 text-blue-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10" placeholder="نام کاربری">
+                        <input id="username" name="username" type="text" required maxlength="5" pattern="[A-Za-z]{5}" class="appearance-none rounded-none relative block w-full px-3 py-3 border border-blue-300 placeholder-blue-500 text-blue-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10" placeholder="نام کاربری (5 حرف)">
                     </div>
                     <div>
                         <label for="password" class="sr-only">رمز عبور</label>
-                        <input id="password" name="password" type="password" required class="appearance-none rounded-none relative block w-full px-3 py-3 border border-blue-300 placeholder-blue-500 text-blue-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10" placeholder="رمز عبور">
+                        <input id="password" name="password" type="password" required minlength="4" pattern="\d{4,}" class="appearance-none rounded-none relative block w-full px-3 py-3 border border-blue-300 placeholder-blue-500 text-blue-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10" placeholder="رمز عبور (حداقل 4 عدد)">
                     </div>
                 </div>
 
@@ -309,6 +352,10 @@
                     <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="questionManagement">
                         <i class="fas fa-tasks ml-3"></i>
                         <span>مدیریت سوالات</span>
+                    </a>
+                    <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="examBuilder">
+                        <i class="fas fa-file-alt ml-3"></i>
+                        <span>ساخت آزمون</span>
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="systemSettings">
                         <i class="fas fa-cog ml-3"></i>
@@ -411,7 +458,7 @@
                                     </div>
                                     <div>
                                         <p class="text-sm text-blue-800">۳ کاربر جدید ثبت‌نام کردند</p>
-                                        <p class="text-xs text-blue-600">۲ ساعت پیش</p>
+                                        <p class="text-xs text-blue-600" id="recentActivity1">در حال بارگذاری...</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center p-3 bg-green-50 rounded-lg">
@@ -420,7 +467,7 @@
                                     </div>
                                     <div>
                                         <p class="text-sm text-green-800">۴۷ سوال تایید شد</p>
-                                        <p class="text-xs text-green-600">امروز، ۱۰:۳۰</p>
+                                        <p class="text-xs text-green-600" id="recentActivity2">در حال بارگذاری...</p>
                                     </div>
                                 </div>
                                 <div class="flex items-center p-3 bg-yellow-50 rounded-lg">
@@ -429,7 +476,7 @@
                                     </div>
                                     <div>
                                         <p class="text-sm text-yellow-800">۱۲ سوال نیاز به بررسی دارند</p>
-                                        <p class="text-xs text-yellow-600">دیروز، ۱۴:۲۰</p>
+                                        <p class="text-xs text-yellow-600" id="recentActivity3">در حال بارگذاری...</p>
                                     </div>
                                 </div>
                             </div>
@@ -598,12 +645,12 @@
                         <div class="flex justify-between items-center mb-4 flex-col md:flex-row">
                             <h3 class="text-lg font-semibold text-blue-800 mb-4 md:mb-0">مدیریت کاربران سیستم</h3>
                             <div class="flex space-x-2 space-x-reverse w-full md:w-auto btn-group-responsive">
-                                <input type="text" placeholder="جستجو در کاربران..." class="w-full md:w-auto px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <button class="px-4 py-2 gradient-bg text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover btn-responsive">
+                                <input type="text" id="userSearchInput" placeholder="جستجو در کاربران..." class="w-full md:w-auto px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <button id="userSearchButton" class="px-4 py-2 gradient-bg text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover btn-responsive">
                                     <i class="fas fa-search ml-2"></i>
                                     جستجو
                                 </button>
-                                <button class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 btn-hover btn-responsive">
+                                <button id="addUserButton" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 btn-hover btn-responsive">
                                     <i class="fas fa-plus ml-2"></i>
                                     کاربر جدید
                                 </button>
@@ -613,7 +660,7 @@
                             <table class="min-w-full divide-y divide-blue-200">
                                 <thead class="bg-blue-50">
                                     <tr>
-                                        <th class="px-6 py-3 text-right text-xs font-medium text-blue-500 uppercase tracking-wider">نام کاربر</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-blue-500 uppercase tracking-wider">نام کاربری</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-blue-500 uppercase tracking-wider">ایمیل</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-blue-500 uppercase tracking-wider">تاریخ عضویت</th>
                                         <th class="px-6 py-3 text-right text-xs font-medium text-blue-500 uppercase tracking-wider">وضعیت</th>
@@ -662,6 +709,92 @@
                     </div>
                 </div>
 
+                <!-- ساخت آزمون -->
+                <div id="examBuilder" class="hidden fade-in">
+                    <div class="bg-white rounded-xl shadow p-6 card-hover">
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4">ساخت آزمون جدید</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            <div>
+                                <h4 class="font-medium text-blue-700 mb-3">تنظیمات آزمون</h4>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-blue-700 mb-1">موضوع آزمون</label>
+                                        <select id="builderSubject" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">همه موضوعات</option>
+                                            <option>ریاضی</option>
+                                            <option>فیزیک</option>
+                                            <option>شیمی</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-blue-700 mb-1">مبحث درسی</label>
+                                        <select id="builderChapter" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">همه مباحث</option>
+                                            <!-- مباحث به صورت دینامیک لود می‌شوند -->
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-blue-700 mb-1">سطح دشواری</label>
+                                        <select id="builderLevel" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                            <option value="">همه سطوح</option>
+                                            <option value="easy">آسان</option>
+                                            <option value="medium">متوسط</option>
+                                            <option value="hard">دشوار</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-blue-700 mb-1">تعداد سوالات</label>
+                                        <input type="number" id="builderQuestionCount" min="1" max="50" value="10" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                    </div>
+                                    <button id="openExamModal" class="w-full py-3 px-4 gradient-bg hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover">
+                                        ساخت آزمون
+                                    </button>
+                                </div>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-blue-700 mb-3">آمار سوالات</h4>
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <div class="space-y-2">
+                                        <div class="flex justify-between">
+                                            <span class="text-blue-700">کل سوالات:</span>
+                                            <span class="font-medium" id="totalQuestionsCount">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-green-700">سوالات آسان:</span>
+                                            <span class="font-medium" id="easyQuestionsCount">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-yellow-700">سوالات متوسط:</span>
+                                            <span class="font-medium" id="mediumQuestionsCount">0</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-red-700">سوالات دشوار:</span>
+                                            <span class="font-medium" id="hardQuestionsCount">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="mt-4 bg-green-50 p-4 rounded-lg">
+                                    <h5 class="font-medium text-green-800 mb-2">آزمون‌های اخیر</h5>
+                                    <div class="space-y-2 text-sm text-green-700">
+                                        <div class="flex justify-between">
+                                            <span>آزمون ریاضی - ۱۴۰۲/۰۶/۲۰</span>
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span>آزمون فیزیک - ۱۴۰۲/۰۶/۱۸</span>
+                                            <button class="text-blue-600 hover:text-blue-800">
+                                                <i class="fas fa-download"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- تنظیمات سیستم -->
                 <div id="systemSettings" class="hidden fade-in">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -688,41 +821,14 @@
                         
                         <div class="bg-white rounded-xl shadow p-6 card-hover">
                             <h3 class="text-lg font-semibold text-blue-800 mb-4">مدیریت موضوعات</h3>
-                            <div class="space-y-4">
-                                <div class="flex justify-between items-center">
-                                    <span class="text-blue-700">ریاضی</span>
-                                    <div>
-                                        <button class="text-blue-600 hover:text-blue-900 ml-2 edit-subject" data-subject="ریاضی"><i class="fas fa-edit"></i></button>
-                                        <button class="text-red-600 hover:text-red-900 delete-subject" data-subject="ریاضی"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-blue-700">فیزیک</span>
-                                    <div>
-                                        <button class="text-blue-600 hover:text-blue-900 ml-2 edit-subject" data-subject="فیزیک"><i class="fas fa-edit"></i></button>
-                                        <button class="text-red-600 hover:text-red-900 delete-subject" data-subject="فیزیک"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-blue-700">شیمی</span>
-                                    <div>
-                                        <button class="text-blue-600 hover:text-blue-900 ml-2 edit-subject" data-subject="شیمی"><i class="fas fa-edit"></i></button>
-                                        <button class="text-red-600 hover:text-red-900 delete-subject" data-subject="شیمی"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-blue-700">ادبیات</span>
-                                    <div>
-                                        <button class="text-blue-600 hover:text-blue-900 ml-2 edit-subject" data-subject="ادبیات"><i class="fas fa-edit"></i></button>
-                                        <button class="text-red-600 hover:text-red-900 delete-subject" data-subject="ادبیات"><i class="fas fa-trash"></i></button>
-                                    </div>
-                                </div>
-                                <div class="pt-4 border-t border-blue-200">
-                                    <input type="text" placeholder="موضوع جدید" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2">
-                                    <button class="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 btn-hover btn-responsive">
-                                        افزودن موضوع
-                                    </button>
-                                </div>
+                            <div class="space-y-4" id="subjectsList">
+                                <!-- موضوعات به صورت دینامیک اضافه خواهند شد -->
+                            </div>
+                            <div class="pt-4 border-t border-blue-200">
+                                <input type="text" id="newSubjectInput" placeholder="موضوع جدید" class="w-full px-3 py-2 border border-blue-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2">
+                                <button id="addSubjectButton" class="w-full py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 btn-hover btn-responsive">
+                                    افزودن موضوع
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -733,7 +839,7 @@
 
     <!-- پنل کاربر عادی -->
     <div id="userPanel" class="min-h-screen hidden">
-        <!-- نوار کناری -->
+        <!-- محتوای پنل کاربر عادی -->
         <div class="fixed inset-y-0 right-0 z-50 w-64 sidebar text-white">
             <div class="flex flex-col h-full">
                 <div class="flex items-center justify-center h-20 bg-blue-900 bg-opacity-50">
@@ -750,8 +856,8 @@
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="mr-3">
-                            <p class="font-medium">کاربر مهمان</p>
-                            <p class="text-xs text-blue-200">امتیاز: <span id="userScoreValue">۰</span></p>
+                            <p class="font-medium">کاربر عادی</p>
+                            <p class="text-xs text-blue-200">سطح دسترسی: کاربر</p>
                         </div>
                     </div>
                 </div>
@@ -760,17 +866,17 @@
                 <nav class="flex-1 p-4">
                     <a href="#" class="flex items-center px-4 py-3 sidebar-item active" data-page="userDashboard">
                         <i class="fas fa-tachometer-alt ml-3"></i>
-                        <span>داشبورد شخصی</span>
+                        <span>داشبورد کاربری</span>
                     </a>
                     <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="addQuestion">
                         <i class="fas fa-plus-circle ml-3"></i>
                         <span>افزودن سوال</span>
                     </a>
-                    <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="myQuestions">
+                    <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="userQuestions">
                         <i class="fas fa-list ml-3"></i>
                         <span>سوالات من</span>
                     </a>
-                    <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="myScores">
+                    <a href="#" class="flex items-center px-4 py-3 sidebar-item" data-page="userScores">
                         <i class="fas fa-chart-line ml-3"></i>
                         <span>امتیازات من</span>
                     </a>
@@ -779,20 +885,6 @@
                         <span>خروج</span>
                     </a>
                 </nav>
-                
-                <!-- وضعیت امتیاز -->
-                <div class="p-4 border-t border-blue-700">
-                    <div class="bg-blue-800 bg-opacity-50 rounded-lg p-3">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="text-sm">امتیاز این ماه</span>
-                            <span class="text-sm font-bold" id="monthlyScoreValue">۰</span>
-                        </div>
-                        <div class="w-full bg-blue-700 rounded-full h-2">
-                            <div class="bg-green-400 h-2 rounded-full" id="monthlyProgress" style="width: 0%"></div>
-                        </div>
-                        <p class="text-xs text-blue-200 mt-2">۰٪ از هدف ماهانه</p>
-                    </div>
-                </div>
             </div>
         </div>
 
@@ -805,31 +897,37 @@
                         <button id="userMenuToggle" class="text-blue-600 focus:outline-none md:hidden">
                             <i class="fas fa-bars text-xl"></i>
                         </button>
-                        <h2 class="mr-4 text-xl font-semibold text-blue-800" id="userPageTitle">داشبورد شخصی</h2>
+                        <h2 class="mr-4 text-xl font-semibold text-blue-800" id="userPageTitle">داشبورد کاربری</h2>
                     </div>
                     <div class="flex items-center">
+                        <div class="ml-4 relative">
+                            <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 cursor-pointer">
+                                <i class="fas fa-bell"></i>
+                            </div>
+                            <span class="absolute top-0 left-0 h-4 w-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">۳</span>
+                        </div>
                         <div class="ml-4">
                             <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
                                 <i class="fas fa-user"></i>
                             </div>
                         </div>
-                        <span class="mr-2 text-blue-800 hidden md:inline">کاربر مهمان</span>
+                        <span class="mr-2 text-blue-800 hidden md:inline">کاربر عادی</span>
                     </div>
                 </div>
             </header>
 
             <!-- محتوای صفحات کاربر -->
             <main class="p-6">
-                <!-- داشبورد کاربر -->
+                <!-- داشبورد کاربری -->
                 <div id="userDashboard" class="fade-in">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                         <div class="bg-white rounded-xl shadow p-6 card-hover">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-full bg-blue-100 text-blue-600">
                                     <i class="fas fa-question-circle text-xl"></i>
                                 </div>
                                 <div class="mr-4">
-                                    <p class="text-sm text-blue-600">سوالات ارسال شده</p>
+                                    <p class="text-sm text-blue-600">سوالات ارسالی</p>
                                     <h3 class="text-2xl font-bold text-blue-800" id="userQuestionsCount">۰</h3>
                                 </div>
                             </div>
@@ -837,7 +935,7 @@
                         <div class="bg-white rounded-xl shadow p-6 card-hover">
                             <div class="flex items-center">
                                 <div class="p-3 rounded-full bg-green-100 text-green-600">
-                                    <i class="fas fa-check-circle text-xl"></i>
+                                    <i class="fas fa-check text-xl"></i>
                                 </div>
                                 <div class="mr-4">
                                     <p class="text-sm text-green-600">سوالات تایید شده</p>
@@ -856,28 +954,84 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="bg-white rounded-xl shadow p-6 card-hover">
+                            <div class="flex items-center">
+                                <div class="p-3 rounded-full bg-purple-100 text-purple-600">
+                                    <i class="fas fa-chart-line text-xl"></i>
+                                </div>
+                                <div class="mr-4">
+                                    <p class="text-sm text-purple-600">امتیاز این ماه</p>
+                                    <h3 class="text-2xl font-bold text-purple-800" id="userMonthlyScore">۰</h3>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="bg-white rounded-xl shadow p-6 card-hover">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-4">به پنل کاربری سمپا خوش آمدید!</h3>
-                        <p class="text-blue-700 mb-4">شما می‌توانید با افزودن سوالات باکیفیت، امتیاز کسب کنید و از درآمد آن بهره‌مند شوید.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <h4 class="font-medium text-blue-800 mb-2">راهنمای شروع</h4>
-                                <ul class="text-sm text-blue-600 list-disc pr-4 space-y-1">
-                                    <li>از بخش "افزودن سوال" سوالات خود را ارسال کنید</li>
-                                    <li>سوالات پس از تایید، امتیاز خواهند داشت</li>
-                                    <li>امتیازهای شما به درآمد تبدیل می‌شوند</li>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white rounded-xl shadow p-6 card-hover">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">پیشرفت ماهانه</h3>
+                            <div class="mb-4">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium text-blue-700">هدف ماهانه: ۱۰۰۰ امتیاز</span>
+                                    <span class="text-sm font-medium text-blue-700" id="monthlyScoreValue">۰</span>
+                                </div>
+                                <div class="w-full bg-blue-200 rounded-full h-2.5">
+                                    <div class="bg-blue-600 h-2.5 rounded-full" id="monthlyProgress" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="mt-6">
+                                <h4 class="font-medium text-blue-700 mb-2">راهنمای کسب امتیاز</h4>
+                                <ul class="text-sm text-blue-600 space-y-1">
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 ml-2"></i>
+                                        سوال آسان: ۱۵ امتیاز
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 ml-2"></i>
+                                        سوال متوسط: ۳۰ امتیاز
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 ml-2"></i>
+                                        سوال دشوار: ۵۰ امتیاز
+                                    </li>
+                                    <li class="flex items-center">
+                                        <i class="fas fa-check text-green-500 ml-2"></i>
+                                        سوال با تصویر: +۱۰ امتیاز
+                                    </li>
                                 </ul>
                             </div>
-                            <div class="bg-green-50 p-4 rounded-lg">
-                                <h4 class="font-medium text-green-800 mb-2">نحوه محاسبه امتیاز</h4>
-                                <ul class="text-sm text-green-600 list-disc pr-4 space-y-1">
-                                    <li>سوال آسان: ۱۵ امتیاز</li>
-                                    <li>سوال متوسط: ۳۰ امتیاز</li>
-                                    <li>سوال دشوار: ۵۰ امتیاز</li>
-                                    <li>سوال با تصویر: +۱۰ امتیاز</li>
-                                </ul>
+                        </div>
+
+                        <div class="bg-white rounded-xl shadow p-6 card-hover">
+                            <h3 class="text-lg font-semibold text-blue-800 mb-4">فعالیت‌های اخیر</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                                    <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 ml-3">
+                                        <i class="fas fa-question-circle"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-blue-800">سوال جدیدی اضافه کردید</p>
+                                        <p class="text-xs text-blue-600">امروز - ۱۵:۳۰</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-3 bg-green-50 rounded-lg">
+                                    <div class="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 ml-3">
+                                        <i class="fas fa-check"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-green-800">سوال شما تایید شد</p>
+                                        <p class="text-xs text-green-600">دیروز - ۱۱:۴۵</p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center p-3 bg-yellow-50 rounded-lg">
+                                    <div class="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 ml-3">
+                                        <i class="fas fa-coins"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-sm text-yellow-800">۳۰ امتیاز دریافت کردید</p>
+                                        <p class="text-xs text-yellow-600">۲ روز پیش - ۰۹:۲۰</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -990,16 +1144,16 @@
                             </div>
                             
                             <button type="submit" class="w-full py-3 px-4 gradient-bg hover:bg-blue-700 text-white font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover btn-responsive">
-                                افزودن سوال به بانک سمپا
+                                ارسال سوال برای بررسی
                             </button>
                         </form>
                     </div>
                 </div>
 
-                <!-- سوالات من -->
-                <div id="myQuestions" class="hidden fade-in">
+                <!-- سوالات کاربر -->
+                <div id="userQuestions" class="hidden fade-in">
                     <div class="bg-white rounded-xl shadow p-6 card-hover">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-4">سوالات ارسال شده توسط شما</h3>
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4">سوالات ارسالی من</h3>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-blue-200">
                                 <thead class="bg-blue-50">
@@ -1021,10 +1175,10 @@
                     </div>
                 </div>
 
-                <!-- امتیازات من -->
-                <div id="myScores" class="hidden fade-in">
+                <!-- امتیازات کاربر -->
+                <div id="userScores" class="hidden fade-in">
                     <div class="bg-white rounded-xl shadow p-6 card-hover">
-                        <h3 class="text-lg font-semibold text-blue-800 mb-4">امتیازات و درآمد شما</h3>
+                        <h3 class="text-lg font-semibold text-blue-800 mb-4">تاریخچه امتیازات</h3>
                         <div class="overflow-x-auto">
                             <table class="min-w-full divide-y divide-blue-200">
                                 <thead class="bg-blue-50">
@@ -1046,694 +1200,6 @@
         </div>
     </div>
 
-    <script>
-        // اطلاعات ادمین
-        const adminCredentials = {
-            username: "Salar",
-            password: "8711"
-        };
-
-        // داده‌های نمونه
-        let appData = {
-            users: [
-                { id: 1, name: "محمد رضایی", email: "m.rezaei@example.com", joinDate: "۱۴۰۲/۰۵/۱۲", status: "active", role: "user" },
-                { id: 2, name: "فاطمه احمدی", email: "f.ahmadi@example.com", joinDate: "۱۴۰۲/۰۴/۲۵", status: "active", role: "user" },
-                { id: 3, name: "علی کریمی", email: "a.karimi@example.com", joinDate: "۱۴۰۲/۰۶/۰۳", status: "inactive", role: "user" }
-            ],
-            adminQuestions: [
-                { id: 1, text: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ", user: "محمد رضایی", subject: "ریاضی", date: "۱۴۰۲/۰۶/۱۵", status: "approved" },
-                { id: 2, text: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده از طراحان گرافیک است", user: "فاطمه احمدی", subject: "فیزیک", date: "۱۴۰۲/۰۶/۱۴", status: "pending" },
-                { id: 3, text: "لورم ایپسوم متن ساختگی با تولید سادگی نامفهوم از صنعت چاپ و با استفاده", user: "علی کریمی", subject: "شیمی", date: "۱۴۰۲/۰۶/۱۰", status: "rejected" }
-            ],
-            userQuestions: [],
-            userScores: [],
-            currentUser: {
-                totalScore: 0,
-                monthlyScore: 0,
-                questionsCount: 0,
-                approvedCount: 0
-            }
-        };
-
-        // نمایش اعلان
-        function showNotification(message, type) {
-            const notification = document.getElementById('notification');
-            notification.textContent = message;
-            notification.className = 'notification';
-            notification.classList.add(type);
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-
-        // مدیریت لاگین
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            if (username === adminCredentials.username && password === adminCredentials.password) {
-                // ورود به عنوان ادمین
-                document.getElementById('authPage').classList.add('hidden');
-                document.getElementById('adminPanel').classList.remove('hidden');
-                showNotification('خوش آمدید مدیر سیستم!', 'success');
-                renderAdminData();
-            } else {
-                // ورود به عنوان کاربر عادی
-                document.getElementById('authPage').classList.add('hidden');
-                document.getElementById('userPanel').classList.remove('hidden');
-                showNotification('خوش آمدید!', 'success');
-                renderUserData();
-            }
-        });
-
-        // مدیریت منو در پنل ادمین
-        document.querySelectorAll('#adminPanel [data-page]').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // حذف کلاس active از همه آیتم‌ها
-                document.querySelectorAll('#adminPanel .sidebar-item').forEach(i => {
-                    i.classList.remove('active');
-                });
-                
-                // اضافه کردن کلاس active به آیتم انتخاب شده
-                this.classList.add('active');
-                
-                // مخفی کردن همه صفحات
-                document.querySelectorAll('#adminPanel > div > main > div').forEach(div => {
-                    div.classList.add('hidden');
-                });
-                
-                // نمایش صفحه انتخاب شده
-                const pageId = this.getAttribute('data-page');
-                document.getElementById(pageId).classList.remove('hidden');
-                
-                // به روز رسانی عنوان صفحه
-                document.getElementById('adminPageTitle').textContent = this.querySelector('span').textContent;
-                
-                // بستن منو در حالت موبایل
-                if (window.innerWidth < 768) {
-                    document.querySelector('#adminPanel .sidebar').classList.remove('open');
-                    document.querySelector('#adminPanel .main-content').classList.remove('sidebar-open');
-                }
-            });
-        });
-
-        // مدیریت منو در پنل کاربر
-        document.querySelectorAll('#userPanel [data-page]').forEach(item => {
-            item.addEventListener('click', function(e) {
-                e.preventDefault();
-                
-                // حذف کلاس active از همه آیتم‌ها
-                document.querySelectorAll('#userPanel .sidebar-item').forEach(i => {
-                    i.classList.remove('active');
-                });
-                
-                // اضافه کردن کلاس active به آیتم انتخاب شده
-                this.classList.add('active');
-                
-                // مخفی کردن همه صفحات
-                document.querySelectorAll('#userPanel > div > main > div').forEach(div => {
-                    div.classList.add('hidden');
-                });
-                
-                // نمایش صفحه انتخاب شده
-                const pageId = this.getAttribute('data-page');
-                document.getElementById(pageId).classList.remove('hidden');
-                
-                // به روز رسانی عنوان صفحه
-                document.getElementById('userPageTitle').textContent = this.querySelector('span').textContent;
-                
-                // بستن منو در حالت موبایل
-                if (window.innerWidth < 768) {
-                    document.querySelector('#userPanel .sidebar').classList.remove('open');
-                    document.querySelector('#userPanel .main-content').classList.remove('sidebar-open');
-                }
-            });
-        });
-
-        // مدیریت منوی موبایل برای ادمین
-        document.getElementById('adminMenuToggle').addEventListener('click', function() {
-            const sidebar = document.querySelector('#adminPanel .sidebar');
-            const mainContent = document.querySelector('#adminPanel .main-content');
-            
-            sidebar.classList.toggle('open');
-            mainContent.classList.toggle('sidebar-open');
-        });
-
-        // مدیریت منوی موبایل برای کاربر
-        document.getElementById('userMenuToggle').addEventListener('click', function() {
-            const sidebar = document.querySelector('#userPanel .sidebar');
-            const mainContent = document.querySelector('#userPanel .main-content');
-            
-            sidebar.classList.toggle('open');
-            mainContent.classList.toggle('sidebar-open');
-        });
-
-        // خروج از پنل ادمین
-        document.getElementById('adminLogout').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('adminPanel').classList.add('hidden');
-            document.getElementById('authPage').classList.remove('hidden');
-            showNotification('با موفقیت خارج شدید', 'success');
-        });
-
-        // خروج از پنل کاربر
-        document.getElementById('userLogout').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.getElementById('userPanel').classList.add('hidden');
-            document.getElementById('authPage').classList.remove('hidden');
-            showNotification('با موفقیت خارج شدید', 'success');
-        });
-
-        // تابع کمکی برای تغییر صفحه در پنل کاربر
-        function switchToPage(pageId) {
-            document.querySelectorAll('#userPanel .sidebar-item').forEach(i => {
-                i.classList.remove('active');
-            });
-            
-            document.querySelector(`#userPanel [data-page="${pageId}"]`).classList.add('active');
-            
-            document.querySelectorAll('#userPanel > div > main > div').forEach(div => {
-                div.classList.add('hidden');
-            });
-            
-            document.getElementById(pageId).classList.remove('hidden');
-            
-            document.getElementById('userPageTitle').textContent = 
-                document.querySelector(`#userPanel [data-page="${pageId}"] span`).textContent;
-        }
-
-        // مدیریت فرم افزودن سوال در پنل کاربر
-        document.getElementById('addQuestionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const level = document.getElementById('questionLevel').value;
-            const hasImage = document.getElementById('needImage').checked;
-            
-            let baseScore = 0;
-            switch(level) {
-                case 'easy': baseScore = 15; break;
-                case 'medium': baseScore = 30; break;
-                case 'hard': baseScore = 50; break;
-            }
-            
-            if (hasImage) {
-                baseScore += 10;
-            }
-            
-            const newQuestion = {
-                id: Date.now(),
-                text: document.getElementById('questionText').value || "سوال نمونه",
-                subject: document.getElementById('questionSubject').value,
-                chapter: document.getElementById('questionChapter').value,
-                level: document.getElementById('questionLevel').options[document.getElementById('questionLevel').selectedIndex].text.split(' ')[0],
-                score: baseScore,
-                status: "pending",
-                date: new Date().toLocaleDateString('fa-IR')
-            };
-            
-            appData.userQuestions.push(newQuestion);
-            appData.currentUser.questionsCount++;
-            
-            showNotification('سوال با موفقیت اضافه شد و در انتظار تایید قرار گرفت!', 'success');
-            this.reset();
-            document.getElementById('imageUploadSection').classList.add('hidden');
-            document.getElementById('imagePreview').classList.add('hidden');
-            updateUserScore();
-            renderUserData();
-        });
-
-        // مدیریت فرم افزودن سوال در پنل ادمین
-        document.getElementById('adminAddQuestionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const level = document.getElementById('adminQuestionLevel').value;
-            const hasImage = document.getElementById('adminNeedImage').checked;
-            
-            let baseScore = 0;
-            switch(level) {
-                case 'easy': baseScore = 15; break;
-                case 'medium': baseScore = 30; break;
-                case 'hard': baseScore = 50; break;
-            }
-            
-            if (hasImage) {
-                baseScore += 10;
-            }
-            
-            const newQuestion = {
-                id: Date.now(),
-                text: document.getElementById('adminQuestionText').value || "سوال نمونه",
-                user: "مدیر سیستم",
-                subject: document.getElementById('adminQuestionSubject').value,
-                date: new Date().toLocaleDateString('fa-IR'),
-                status: "approved"
-            };
-            
-            appData.adminQuestions.unshift(newQuestion);
-            
-            showNotification('سوال با موفقیت به بانک سوالات اضافه شد!', 'success');
-            this.reset();
-            document.getElementById('adminImageUploadSection').classList.add('hidden');
-            document.getElementById('adminImagePreview').classList.add('hidden');
-            updateAdminScore();
-            renderAdminData();
-        });
-
-        // به روز رسانی امتیاز در پنل کاربر
-        function updateUserScore() {
-            const level = document.getElementById('questionLevel').value;
-            const hasImage = document.getElementById('needImage').checked;
-            
-            let baseScore = 0;
-            switch(level) {
-                case 'easy': baseScore = 15; break;
-                case 'medium': baseScore = 30; break;
-                case 'hard': baseScore = 50; break;
-            }
-            
-            if (hasImage) {
-                baseScore += 10;
-            }
-            
-            document.getElementById('scoreValue').textContent = baseScore;
-        }
-
-        // به روز رسانی امتیاز در پنل ادمین
-        function updateAdminScore() {
-            const level = document.getElementById('adminQuestionLevel').value;
-            const hasImage = document.getElementById('adminNeedImage').checked;
-            
-            let baseScore = 0;
-            switch(level) {
-                case 'easy': baseScore = 15; break;
-                case 'medium': baseScore = 30; break;
-                case 'hard': baseScore = 50; break;
-            }
-            
-            if (hasImage) {
-                baseScore += 10;
-            }
-            
-            document.getElementById('adminScoreValue').textContent = baseScore;
-        }
-
-        // مدیریت نمایش/پنهان کردن بخش آپلود تصویر در پنل کاربر
-        document.getElementById('needImage').addEventListener('change', function() {
-            const imageSection = document.getElementById('imageUploadSection');
-            if (this.checked) {
-                imageSection.classList.remove('hidden');
-                updateUserScore();
-            } else {
-                imageSection.classList.add('hidden');
-                document.getElementById('imagePreview').classList.add('hidden');
-                updateUserScore();
-            }
-        });
-
-        // مدیریت نمایش/پنهان کردن بخش آپلود تصویر در پنل ادمین
-        document.getElementById('adminNeedImage').addEventListener('change', function() {
-            const imageSection = document.getElementById('adminImageUploadSection');
-            if (this.checked) {
-                imageSection.classList.remove('hidden');
-                updateAdminScore();
-            } else {
-                imageSection.classList.add('hidden');
-                document.getElementById('adminImagePreview').classList.add('hidden');
-                updateAdminScore();
-            }
-        });
-
-        // پیش‌نمایش تصویر آپلود شده در پنل کاربر
-        document.getElementById('questionImage').addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('preview').src = e.target.result;
-                    document.getElementById('imagePreview').classList.remove('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // پیش‌نمایش تصویر آپلود شده در پنل ادمین
-        document.getElementById('adminQuestionImage').addEventListener('change', function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById('adminPreview').src = e.target.result;
-                    document.getElementById('adminImagePreview').classList.remove('hidden');
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
-        // تغییر سطح دشواری در پنل کاربر
-        document.getElementById('questionLevel').addEventListener('change', updateUserScore);
-
-        // تغییر سطح دشواری در پنل ادمین
-        document.getElementById('adminQuestionLevel').addEventListener('change', updateAdminScore);
-
-        // رندر داده‌های ادمین
-        function renderAdminData() {
-            // رندر کاربران
-            const usersTable = document.getElementById('adminUsersTable');
-            usersTable.innerHTML = '';
-            
-            appData.users.forEach(user => {
-                const statusText = user.status === 'active' ? 'فعال' : 'غیرفعال';
-                const statusClass = user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
-                
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-blue-50 transition-colors';
-                row.innerHTML = `
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${user.name}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${user.email}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${user.joinDate}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${statusText}</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${user.role === 'admin' ? 'مدیر' : 'کاربر عادی'}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button class="text-blue-600 hover:text-blue-900 ml-4 edit-user" data-id="${user.id}"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-600 hover:text-red-900 delete-user" data-id="${user.id}"><i class="fas fa-ban"></i></button>
-                    </td>
-                `;
-                usersTable.appendChild(row);
-            });
-            
-            // رندر سوالات
-            const questionsTable = document.getElementById('adminQuestionsTable');
-            questionsTable.innerHTML = '';
-            
-            appData.adminQuestions.forEach(question => {
-                const statusText = question.status === 'approved' ? 'تایید شده' : question.status === 'pending' ? 'در انتظار' : 'رد شده';
-                const statusClass = question.status === 'approved' ? 'bg-green-100 text-green-800' : 
-                                  question.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800';
-                
-                const row = document.createElement('tr');
-                row.className = 'hover:bg-blue-50 transition-colors';
-                row.innerHTML = `
-                    <td class="px-6 py-4 text-sm text-blue-900">${question.text}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${question.user}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${question.subject}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${question.date}</td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${statusText}</span>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button class="text-blue-600 hover:text-blue-900 ml-4 edit-question" data-id="${question.id}"><i class="fas fa-edit"></i></button>
-                        <button class="text-red-600 hover:text-red-900 delete-question" data-id="${question.id}"><i class="fas fa-trash"></i></button>
-                        ${question.status === 'pending' ? 
-                          `<button class="text-green-600 hover:text-green-900 approve-question" data-id="${question.id}"><i class="fas fa-check"></i></button>
-                           <button class="text-red-600 hover:text-red-900 reject-question" data-id="${question.id}"><i class="fas fa-times"></i></button>` : ''}
-                    </td>
-                `;
-                questionsTable.appendChild(row);
-            });
-            
-            // اضافه کردن event listener برای دکمه‌های سوالات
-            document.querySelectorAll('.edit-question').forEach(button => {
-                button.addEventListener('click', function() {
-                    const questionId = parseInt(this.getAttribute('data-id'));
-                    openEditQuestionModal(questionId);
-                });
-            });
-            
-            document.querySelectorAll('.delete-question').forEach(button => {
-                button.addEventListener('click', function() {
-                    const questionId = parseInt(this.getAttribute('data-id'));
-                    deleteQuestion(questionId);
-                });
-            });
-            
-            document.querySelectorAll('.approve-question').forEach(button => {
-                button.addEventListener('click', function() {
-                    const questionId = parseInt(this.getAttribute('data-id'));
-                    updateQuestionStatus(questionId, 'approved');
-                });
-            });
-            
-            document.querySelectorAll('.reject-question').forEach(button => {
-                button.addEventListener('click', function() {
-                    const questionId = parseInt(this.getAttribute('data-id'));
-                    updateQuestionStatus(questionId, 'rejected');
-                });
-            });
-            
-            // اضافه کردن event listener برای دکمه‌های کاربران
-            document.querySelectorAll('.edit-user').forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = parseInt(this.getAttribute('data-id'));
-                    showNotification(`ویرایش کاربر با شناسه ${userId}`, 'success');
-                });
-            });
-            
-            document.querySelectorAll('.delete-user').forEach(button => {
-                button.addEventListener('click', function() {
-                    const userId = parseInt(this.getAttribute('data-id'));
-                    if (confirm('آیا از حذف این کاربر اطمینان دارید؟')) {
-                        showNotification(`کاربر با شناسه ${userId} حذف شد`, 'success');
-                    }
-                });
-            });
-            
-            // اضافه کردن event listener برای دکمه‌های موضوعات
-            document.querySelectorAll('.edit-subject').forEach(button => {
-                button.addEventListener('click', function() {
-                    const subject = this.getAttribute('data-subject');
-                    showNotification(`ویرایش موضوع ${subject}`, 'success');
-                });
-            });
-            
-            document.querySelectorAll('.delete-subject').forEach(button => {
-                button.addEventListener('click', function() {
-                    const subject = this.getAttribute('data-subject');
-                    if (confirm(`آیا از حذف موضوع ${subject} اطمینان دارید؟`)) {
-                        showNotification(`موضوع ${subject} حذف شد`, 'success');
-                    }
-                });
-            });
-        }
-
-        // رندر داده‌های کاربر
-        function renderUserData() {
-            // به روز رسانی آمار کاربر
-            document.getElementById('userQuestionsCount').textContent = appData.currentUser.questionsCount;
-            document.getElementById('userApprovedCount').textContent = appData.currentUser.approvedCount;
-            document.getElementById('userTotalScore').textContent = appData.currentUser.totalScore;
-            document.getElementById('userScoreValue').textContent = appData.currentUser.totalScore;
-            document.getElementById('monthlyScoreValue').textContent = appData.currentUser.monthlyScore;
-            
-            // محاسبه پیشرفت ماهانه
-            const progressPercent = Math.min(100, (appData.currentUser.monthlyScore / 1000) * 100);
-            document.getElementById('monthlyProgress').style.width = `${progressPercent}%`;
-            document.querySelector('#userPanel .p-4.border-t.border-blue-700 p.text-xs').textContent = `${Math.round(progressPercent)}٪ از هدف ماهانه`;
-            
-            // رندر سوالات کاربر
-            const userQuestionsTable = document.getElementById('userQuestionsTable');
-            userQuestionsTable.innerHTML = '';
-            
-            if (appData.userQuestions.length === 0) {
-                userQuestionsTable.innerHTML = `
-                    <tr>
-                        <td colspan="7" class="px-6 py-4 text-center text-blue-500">
-                            <i class="fas fa-inbox text-4xl mb-2 block"></i>
-                            <p>هنوز سوالی ارسال نکرده‌اید</p>
-                            <button class="mt-4 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 btn-hover" onclick="switchToPage('addQuestion')">
-                                اولین سوال خود را ارسال کنید
-                            </button>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                appData.userQuestions.forEach(question => {
-                    const statusText = question.status === 'approved' ? 'تایید شده' : question.status === 'pending' ? 'در انتظار' : 'رد شده';
-                    const statusClass = question.status === 'approved' ? 'bg-green-100 text-green-800' : 
-                                      question.status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800';
-                    
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-blue-50 transition-colors';
-                    row.innerHTML = `
-                        <td class="px-6 py-4 text-sm text-blue-900">${question.text}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${question.subject}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${question.chapter}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${question.level}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${question.score}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">${statusText}</span>
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button class="text-blue-600 hover:text-blue-900 ml-4 edit-user-question" data-id="${question.id}"><i class="fas fa-edit"></i></button>
-                            <button class="text-red-600 hover:text-red-900 delete-user-question" data-id="${question.id}"><i class="fas fa-trash"></i></button>
-                        </td>
-                    `;
-                    userQuestionsTable.appendChild(row);
-                });
-                
-                // اضافه کردن event listener برای دکمه‌های سوالات کاربر
-                document.querySelectorAll('.edit-user-question').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const questionId = parseInt(this.getAttribute('data-id'));
-                        openEditQuestionModal(questionId, true);
-                    });
-                });
-                
-                document.querySelectorAll('.delete-user-question').forEach(button => {
-                    button.addEventListener('click', function() {
-                        const questionId = parseInt(this.getAttribute('data-id'));
-                        deleteUserQuestion(questionId);
-                    });
-                });
-            }
-            
-            // رندر امتیازات کاربر
-            const userScoresTable = document.getElementById('userScoresTable');
-            userScoresTable.innerHTML = '';
-            
-            if (appData.userScores.length === 0) {
-                userScoresTable.innerHTML = `
-                    <tr>
-                        <td colspan="4" class="px-6 py-4 text-center text-blue-500">
-                            <i class="fas fa-chart-line text-4xl mb-2 block"></i>
-                            <p>هنوز امتیازی کسب نکرده‌اید</p>
-                            <p class="text-sm mt-2">با ارسال سوالات باکیفیت امتیاز کسب کنید</p>
-                        </td>
-                    </tr>
-                `;
-            } else {
-                appData.userScores.forEach(score => {
-                    const row = document.createElement('tr');
-                    row.className = 'hover:bg-blue-50 transition-colors';
-                    row.innerHTML = `
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${score.date}</td>
-                        <td class="px-6 py-4 text-sm text-blue-900">${score.question}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-blue-900">${score.points}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">تایید شده</span>
-                        </td>
-                    `;
-                    userScoresTable.appendChild(row);
-                });
-            }
-        }
-
-        // باز کردن مودال ویرایش سوال
-        function openEditQuestionModal(questionId, isUserQuestion = false) {
-            const questions = isUserQuestion ? appData.userQuestions : appData.adminQuestions;
-            const question = questions.find(q => q.id === questionId);
-            
-            if (question) {
-                document.getElementById('editQuestionId').value = question.id;
-                document.getElementById('editQuestionSubject').value = question.subject;
-                document.getElementById('editQuestionText').value = question.text;
-                
-                document.getElementById('editQuestionModal').classList.add('open');
-            }
-        }
-
-        // بستن مودال ویرایش سوال
-        document.getElementById('closeEditModal').addEventListener('click', function() {
-            document.getElementById('editQuestionModal').classList.remove('open');
-        });
-
-        document.getElementById('cancelEdit').addEventListener('click', function() {
-            document.getElementById('editQuestionModal').classList.remove('open');
-        });
-
-        // مدیریت فرم ویرایش سوال
-        document.getElementById('editQuestionForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const questionId = parseInt(document.getElementById('editQuestionId').value);
-            const subject = document.getElementById('editQuestionSubject').value;
-            const text = document.getElementById('editQuestionText').value;
-            
-            // پیدا کردن سوال در هر دو لیست و به روز رسانی آن
-            let question = appData.userQuestions.find(q => q.id === questionId);
-            if (question) {
-                question.subject = subject;
-                question.text = text;
-            }
-            
-            question = appData.adminQuestions.find(q => q.id === questionId);
-            if (question) {
-                question.subject = subject;
-                question.text = text;
-            }
-            
-            showNotification('سوال با موفقیت ویرایش شد', 'success');
-            document.getElementById('editQuestionModal').classList.remove('open');
-            
-            // به روز رسانی نمایش
-            renderAdminData();
-            renderUserData();
-        });
-
-        // حذف سوال
-        function deleteQuestion(questionId) {
-            if (confirm('آیا از حذف این سوال اطمینان دارید؟')) {
-                appData.adminQuestions = appData.adminQuestions.filter(q => q.id !== questionId);
-                showNotification('سوال با موفقیت حذف شد', 'success');
-                renderAdminData();
-            }
-        }
-
-        // حذف سوال کاربر
-        function deleteUserQuestion(questionId) {
-            if (confirm('آیا از حذف این سوال اطمینان دارید؟')) {
-                appData.userQuestions = appData.userQuestions.filter(q => q.id !== questionId);
-                appData.currentUser.questionsCount--;
-                showNotification('سوال با موفقیت حذف شد', 'success');
-                renderUserData();
-            }
-        }
-
-        // به روز رسانی وضعیت سوال
-        function updateQuestionStatus(questionId, status) {
-            const question = appData.adminQuestions.find(q => q.id === questionId);
-            if (question) {
-                question.status = status;
-                showNotification(`وضعیت سوال به ${status === 'approved' ? 'تایید شده' : 'رد شده'} تغییر کرد`, 'success');
-                renderAdminData();
-                
-                // اگر سوال تایید شد، به امتیازات کاربر اضافه شود
-                if (status === 'approved') {
-                    // در اینجا باید کاربر مربوطه پیدا شود و امتیاز به او اضافه گردد
-                    // برای سادگی، فقط یک پیام نمایش می‌دهیم
-                    showNotification('امتیاز سوال به کاربر مربوطه اضافه شد', 'success');
-                }
-            }
-        }
-
-        // مقداردهی اولیه
-        document.addEventListener('DOMContentLoaded', function() {
-            updateUserScore();
-            updateAdminScore();
-            
-            // اضافه کردن event listener برای دکمه ذخیره تنظیمات
-            document.querySelector('#systemSettings button').addEventListener('click', function() {
-                showNotification('تنظیمات با موفقیت ذخیره شد', 'success');
-            });
-            
-            // اضافه کردن event listener برای دکمه افزودن موضوع
-            document.querySelectorAll('#systemSettings button.bg-green-600').forEach(button => {
-                button.addEventListener('click', function() {
-                    const input = this.parentElement.querySelector('input');
-                    if (input.value.trim()) {
-                        showNotification(`موضوع "${input.value}" با موفقیت اضافه شد`, 'success');
-                        input.value = '';
-                    }
-                });
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
